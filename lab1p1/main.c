@@ -1,37 +1,47 @@
-// ******************************************************************************************* //
-//
-// File:         lab1p1.c
-// Date:         
-// Authors:      
-//
-// Description: Part 1 for lab 1
-// ******************************************************************************************* //
+
 
 #include <xc.h>
 #include <sys/attribs.h>
-#include "leds.h"
+#include "config.h"
 #include "interrupt.h"
 #include "switch.h"
+#include "led.h"
 #include "timer.h"
 
 
-/* Please note that the configuration file has changed from lab 0.
- * the oscillator is now of a different frequency.
- */
-int main(void)
-{
-    SYSTEMConfigPerformance(10000000);
+
+
+#define OUTPUT 0
+#define INPUT 1
+
+
+int main() {
+    SYSTEMConfigPerformance(10000000);    //Configures low-level system parameters for 10 MHz clock
+    enableInterrupts();                   //This function is necessary to use interrupts.
+
     
-    while(1)
-    {
-        //TODO: Using a finite-state machine, define the behavior of the LEDs
-        //Debounce the switch
+    initLEDs();
+    //initTimer1();
+   initTimer2();
+    initSW();
+    
+    
+    while(1){
+        
+        if(IFS1bits.CNAIF==1 && PORTAbits.RA7==1)
+        {
+            delayMs(5);
+        LATGbits.LATG12=!LATGbits.LATG12;
+        LATGbits.LATG14=!LATGbits.LATG14;
+        IFS1bits.CNAIF=0;
+            delayMs(5);
+        }
+        
     }
     
     return 0;
 }
 
-void __ISR(_CHANGE_NOTICE_VECTOR, IPL3SRS) _CNInterrupt(void){
-    //TODO: Implement the interrupt to capture the press of the button
 
-}
+  
+

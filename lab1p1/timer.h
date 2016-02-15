@@ -1,14 +1,20 @@
 /* 
  * File:   timer.h
- * Author: 
+ * Author: gvanhoy
  *
- * Created on December 30, 2014, 8:07 PM
+ * Created on August 27, 2015, 3:26 PM
  */
 
-#ifndef INITTIMER_H
-#define	INITTIMER_H
+#ifndef TIMER_H
+#define	TIMER_H
 
-void delayUs(unsigned int delay);
 
-#endif	/* INITTIMER_H */
+//void initTimer1();
+void initTimer2();
+void delayMs(unsigned int delay);
+//void resetT1();
+//void resetT2();
+
+
+#endif	/* TIMER_H */
 
