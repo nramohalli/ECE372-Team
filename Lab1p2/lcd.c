@@ -33,6 +33,10 @@
 #define TRIS_RS 
 #define TRIS_E  
 
+#define LCDRUNNING "Running"
+#define LCDSTOPPED "Stopped"
+
+
 /* This function should take in a two-byte word and writes either the lower or upper
  * byte to the last four bits of LATE. Additionally, according to the LCD data sheet
  * It should set LCD_RS and LCD_E with the appropriate values and delays.
