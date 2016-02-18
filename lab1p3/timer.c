@@ -8,8 +8,14 @@
 #include <xc.h>
 #include "timer.h"
 
+
+
 void delayUs(unsigned int delay){
 
     //TODO: Create a delay for "delay" micro seconds using timer 2
     
+}
+
+string getTimeString(){
+
 }

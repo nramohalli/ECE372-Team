@@ -9,6 +9,7 @@
 #define	INITTIMER_H
 
 void delayUs(unsigned int delay);
+string getTimeString();
 
 #endif	/* INITTIMER_H */
 
