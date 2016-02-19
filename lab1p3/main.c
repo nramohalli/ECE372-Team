@@ -1,4 +1,5 @@
-// ******************************************************************************************* //
+
+initSW();// ******************************************************************************************* //
 //
 // File:         lab1p2.c
 // Date:         12-30-2014
@@ -30,6 +31,7 @@ int main(void)
     //TODO: Write each initialization function
     initLEDs();
     initTimer2();
+    initSW();
     
     //init state var
     stateType state = INIT;

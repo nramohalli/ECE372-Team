@@ -9,6 +9,8 @@
 #define	INITTIMER_H
 
 void delayUs(unsigned int delay);
+void initTimer1();
+void initTimer2();
 
 #endif	/* INITTIMER_H */
 
