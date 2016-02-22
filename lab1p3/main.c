@@ -1,5 +1,5 @@
 
-initSW();// ******************************************************************************************* //
+//******************************************************************************************* //
 //
 // File:         lab1p2.c
 // Date:         12-30-2014
@@ -16,6 +16,8 @@ initSW();// ********************************************************************
 #include "interrupt.h"
 #include "led.h"
 
+#define DELAY_TIME 100
+
 //TODO: Define states of the state machine
 typedef enum stateTypeEnum{
     INIT, DEINIT, WAIT, DEWAIT, LCDRUN, COUNT, DECOUNT, LCDSTOP
@@ -28,10 +30,11 @@ int main(void)
 {
     enableInterrupts();                   //This function is necessary to use interrupts.
 
-    //TODO: Write each initialization function
-    initLEDs();
-    initTimer2();
-    initSW();
+	initLEDs();
+	initTimer1();
+	initTimer2();
+	initSW();
+	initLCD();
     
     //init state var
     stateType state = INIT;
@@ -45,9 +48,7 @@ int main(void)
                 state = DEINIT;
                 break;
             case DEINIT:
-                
-                //wait x amount of time
-                
+                delayUs(DELAY_TIME);
                 state = WAIT;
                 break;
             case WAIT:
@@ -57,9 +58,7 @@ int main(void)
                 state = DEWAIT;
                 break;
             case DEWAIT:
-                
-                //wait x amount of time
-                
+			delayUs(DELAY_TIME);
                 state = LCDRUN;
                 break;
             case LCDRUN:
@@ -71,9 +70,7 @@ int main(void)
             case COUNT:
                 break;
             case DECOUNT:
-                
-                //wait x amount of time
-                
+			delayUs(DELAY_TIME);
                 state = LCDSTOP;
                 break;
             case LCDSTOP:

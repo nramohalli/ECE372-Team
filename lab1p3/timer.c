@@ -30,7 +30,6 @@ initTimer2(){
 
 void delayUs(unsigned int delay){
 
-    //TODO: Create a delay for "delay" micro seconds using timer 2
     TMR2= 0;
     PR2 = 624*delay;
     IFS0bits.T2IF=0;
