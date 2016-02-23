@@ -10,6 +10,7 @@
 
 void delayUs(unsigned int delay);
 void initTimer2();
+void testTimer(void);
 
 #endif	/* INITTIMER_H */
 
