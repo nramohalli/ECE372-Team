@@ -34,10 +34,9 @@ void testTimer(void){
     
     int i = 0;
     TRISDbits.TRISD0 = 0;
-    for(i=1; i<=10000; i++){
-        LATDbits.LATD0 = !LATDbits.LATD0;
-        delayUs(i);
-    }
+    LATDbits.LATD0 = !LATDbits.LATD0;
+    for(i=1; i<=1000; i++)
+        delayUs(16);
     
 }
     
