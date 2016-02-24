@@ -13,19 +13,19 @@ void main(){
 	initTimer1();
 
 	// delay until half a second 
-	delay(500);
+	delayUs(5000);
 	//get 00:00:50
 	printf("%s\n", getTimeString());
 
 
 	// delay until 1s 75ms 
-	delay(1250);
+	delayUs(12500);
 	//get 00:01:75
 	printf("%s\n", getTimeString());
 
 
 	// delay until 1min 
-	delay(58750);
+	delayUs(587500);
 	//get 01:00:00
 	printf("%s\n", getTimeString());
 
