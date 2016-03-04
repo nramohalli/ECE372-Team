@@ -11,7 +11,7 @@
 void delayUs(unsigned int delay);
 void initTimer1();
 void initTimer2();
-String getTimeString();
+
 
 #endif	/* INITTIMER_H */
 

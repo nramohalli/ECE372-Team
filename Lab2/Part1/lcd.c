@@ -10,6 +10,7 @@
 #include <xc.h>
 #include "lcd.h"
 #include "timer.h"
+#include "string.h"
 
 /* The pins that you will use for the lcd control will be
  * LCD_RS      RC4
@@ -112,11 +113,7 @@ void initLCD(void) {
     // commands can be utilized. The first few initialition commands cannot be done using the
     // WriteLCD function. Additionally, the specific sequence and timing is very important.
 
-    //delayUs(15000); //150ms delay 
-     int i = 0; // Loop needed to make a diley of 1.64 ms
-    for (i = 0; i < 100; i++) { //
-        delayUs(150); //***********************
-    }
+    delayUs(15000); //150ms delay 
     
 
     // Function Set (specifies data width, lines, and font.
@@ -132,7 +129,7 @@ void initLCD(void) {
     writeLCD(0x08, 0, 40); //on and off display
     writeLCD(0x01, 0, 1640); //clear display 
     writeLCD(0x06, 0, 40); //entry mode set
-    writeLCD(0x0C, 0, 40); // display on, cursor off, blink off
+    writeLCD(0x0D, 0, 40); // display on, cursor off, blink off
    
 }
 
@@ -161,18 +158,15 @@ void clearLCD(){
 /*
  Use the command for changing the DD RAM address to put the cursor somewhere.
  */
-void moveCursorLCD(unsigned char x, unsigned char y){
-    
-    if (y != 0) y = 0x40;
-    writeLCD(0x80 + x + y, 0, 46); 
-    
+void moveCursorLCD(unsigned char x, unsigned char y){ 
+    if (y != 0)
+    {
+        y = 0x40; writeLCD(0x80 + x + y, 0, 46); 
+    }
+    else 
+        y = 0; //this should write to row 0
 }
 
-/*
- * This function is called in lab1p2.c for testing purposes.
- * If everything is working properly, you should get this to look like the video on D2L
- * However, it is suggested that you test more than just this one function.
- */
 void testLCD(){
     initLCD();
     int i = 0;
@@ -186,3 +180,34 @@ void testLCD(){
     for(i = 0; i < 1000; i++) delayUs(1000);
      
 }
+
+/* void getTimeString(int min, int sec, int mil)
+{
+    //minute calculations
+    int tmin=min;
+    
+    int min_1=tmin%10;//ones place of minute
+    int min_10=((tmin-min_1)/10)%10;//tens place of minute
+    
+    //second calculations
+    int tsec=sec;
+    
+    int sec_1=tsec%10;//ones place of second
+    int sec_10=((tsec-sec_1)/10) %10; //tens place of second
+   
+    //the rest calculations
+    int pre= mil;
+    int pre_1=pre%10;
+    int pre_10=((pre-pre_1)/10)%10;
+   
+    char time[9];
+    sprintf(time,"%d:%d:%d",min,sec,mil);
+   
+   moveCursorLCD(1, 2);
+     printStringLCD(time);
+ 
+}
+  */
+   
+    
+  
