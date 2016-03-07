@@ -15,6 +15,10 @@
 #include "interrupt.h"
 #include "keypad.h"
 
+
+//trying to save
+
+
 //TODO: Define states of the state machine
 typedef enum stateTypeEnum{
    WAIT4PRESS, WAIT, WAIT4RELEASE, COL0, COL1, COL2
