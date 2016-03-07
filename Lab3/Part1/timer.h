@@ -5,13 +5,13 @@
  * Created on December 30, 2014, 8:07 PM
  */
 
-#ifndef INITTIMER_H
-#define	INITTIMER_H
+#ifndef TIMER_H
+#define	TIMER_H
 
 void delayUs(unsigned int delay);
 void initTimer1();
 void initTimer2();
 
 
-#endif	/* INITTIMER_H */
+#endif	/* TIMER_H */
 

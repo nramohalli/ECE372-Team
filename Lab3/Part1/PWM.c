@@ -3,12 +3,6 @@
 #include <xc.h>
 #include "PWM.h"
 
-
-
-
-
-
-
 void initPWM() {
     
      RPD1Rbits.RPD1R = 0b1011; // map OC2 to RD1

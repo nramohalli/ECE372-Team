@@ -1,7 +1,8 @@
 #include <xc.h>
+#include "ADC.h"
 
 
-void ADC() {
+void initADC() {
   
      ANSELBbits.ANSB0 = 0; 
     AD1CON1bits.FORM = 0; // 16 unsigned integer
