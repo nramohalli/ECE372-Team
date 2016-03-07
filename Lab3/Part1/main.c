@@ -15,7 +15,10 @@
 #include "interrupt.h"
 #include "keypad.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of fb77406... adding changes round 100
 //TODO: Define states of the state machine
 typedef enum stateTypeEnum{
    WAIT4PRESS, WAIT, WAIT4RELEASE, COL0, COL1, COL2
