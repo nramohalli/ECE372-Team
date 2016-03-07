@@ -16,9 +16,6 @@
 #include "keypad.h"
 
 
-//trying to save
-
-
 //TODO: Define states of the state machine
 typedef enum stateTypeEnum{
    WAIT4PRESS, WAIT, WAIT4RELEASE, COL0, COL1, COL2
@@ -43,9 +40,8 @@ int main(void)
     int r = 0;
     
     enableInterrupts();                   //This function is necessary to use interrupts.
-    initTimer2();
+    initTimer1();
     initLCD();
-    initKeypad();
     
     SYSTEMConfigPerformance(10000000);
     
@@ -165,52 +161,12 @@ int main(void)
 
 //interrupt to go to init state ( reset the system )
 void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterupt(){
-    INTERRUPT_E_FLAG = DOWN;
+    
+	INTERRUPT_E_FLAG = DOWN;
     int i = 0;
     
-    if (state == WAIT4PRESS && (KEYPAD_PORT_ROW0 == PRESSED || KEYPAD_PORT_ROW1 == PRESSED || KEYPAD_PORT_ROW2 == PRESSED || KEYPAD_PORT_ROW3 == PRESSED)) {
-        INTERRUPT_E_PINS = _OFF;
-        state = WAIT;
-    }
-    if (state == WAIT4RELEASE && KEYPAD_PORT_ROW0 == RELEASED && KEYPAD_PORT_ROW1 == RELEASED && KEYPAD_PORT_ROW2 == RELEASED && KEYPAD_PORT_ROW3 == RELEASED ){
-        //INTERRUPT_E_PINS = _ON;
-        state = WAIT4PRESS;
-    }
-    
-//    if (KEYPAD_PORT_ROW0 == PRESSED){
-//        printStringLCD("ROW0");
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//        returnedKey = scanKeypad();
-//        printCharLCD(returnedKey);
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//        
-//    }
-//    
-//    if (KEYPAD_PORT_ROW1 == PRESSED){
-//        printStringLCD("ROW1");
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//    }
-//    
-//    if (KEYPAD_PORT_ROW2 == PRESSED){
-//        printStringLCD("ROW2");
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//    }
-//    
-//    if (KEYPAD_PORT_ROW3 == PRESSED){
-//        printStringLCD("ROW3");
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//    }
-    
-    
-
+	if (state == WAIT4RELEASE){ ; }
+	if (state == WAIT4RELEASE){ ; }
+	if (state == WAIT4RELEASE){ ; }
+	if (state == WAIT4RELEASE){ ; }
 }
