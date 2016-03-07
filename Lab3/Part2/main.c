@@ -17,7 +17,7 @@
 
 //TODO: Define states of the state machine
 typedef enum stateTypeEnum{
-   WAIT4PRESS, WAIT, WAIT4RELEASE, COL0, COL1, COL2
+	IDLE_B, D_IDLE_B, FORWARD, D_FORWARD, IDLE_F, D_IDLE_F, BACKWARD, D_BACKWORD, 
 } stateType;
 
 volatile stateType state=WAIT4PRESS;
@@ -39,118 +39,40 @@ int main(void)
     int r = 0;
     
     enableInterrupts();                   //This function is necessary to use interrupts.
-    initTimer2();
+    initTimer1();
     initLCD();
-    initKeypad();
+	initSW();
+	initADC();
+	initPDM();
     
     SYSTEMConfigPerformance(10000000);
     
     while(1){
         
         switch(state){
-            case WAIT4PRESS:
-                //INTERRUPT_E_PINS = _ON;
-                delayUs(1000);
-                KEYPAD_LAT_COL0 = ODC_CLOSED;
-                KEYPAD_LAT_COL1 = ODC_CLOSED;
-                KEYPAD_LAT_COL2 = ODC_CLOSED;
+			case IDLE_B:
                 break;
                 
-            case WAIT:
-                KEYPAD_LAT_COL0 = ODC_OPEN;
-                KEYPAD_LAT_COL1 = ODC_OPEN;
-                KEYPAD_LAT_COL2 = ODC_OPEN;
-                state = COL0;
-                break;
+			case D_IDLE_B:
+				break;
                 
-            case WAIT4RELEASE:
-                INTERRUPT_E_PINS = _ON;
-                break;
+			case FORWARD:
+				break;
                 
-            case COL0:
-                KEYPAD_LAT_COL1 = ODC_OPEN;
-                KEYPAD_LAT_COL2 = ODC_OPEN;
-                KEYPAD_LAT_COL0 = ODC_CLOSED;
-                delayUs(1000);
-                //********************************
-                returnedKey = scanKeypad(0);
-                if (returnedKey != '!'){
-                delayUs(1000);
-                    printCharLCD(returnedKey);
-                    delayUs(1000);
-                    c = c + 1;
-                    if (c != 16) moveCursorLCD(1,0);
-                    else if (c == 16 && r == 0) {
-                        c = 0;
-                        r = 2;
-                        moveCursorLCD(0,r);
-                    }
-                    else if (c == 16 && r == 2) {
-                        c = 0;
-                        r = 0;
-                        moveCursorLCD(0,r);
-                    }
-                    state = WAIT4RELEASE;
-                }
-                else state = COL1;
-                break;
+			case D_FORWARD:
+				break;
                 
-            case COL1:
-                KEYPAD_LAT_COL0 = ODC_OPEN;
-                KEYPAD_LAT_COL2 = ODC_OPEN;
-                KEYPAD_LAT_COL1 = ODC_CLOSED;
-                delayUs(1000);
-                //********************************
-                returnedKey = scanKeypad(1);
-                if (returnedKey != '!'){
-                delayUs(1000);
-                    printCharLCD(returnedKey);
-                    delayUs(1000);
-                    c = c + 1;
-                    if (c != 16) moveCursorLCD(1,0);
-                    else if (c == 16 && r == 0) {
-                        c = 0;
-                        r = 2;
-                        moveCursorLCD(0,r);
-                    }
-                    else if (c == 16 && r == 2) {
-                        c = 0;
-                        r = 0;
-                        moveCursorLCD(0,r);
-                    }
-                    state = WAIT4RELEASE;
-                }
-                else state = COL2;
-                break;
-                
-            case COL2:
-                KEYPAD_LAT_COL0 = ODC_OPEN;
-                KEYPAD_LAT_COL1 = ODC_OPEN;
-                KEYPAD_LAT_COL2 = ODC_CLOSED;
-                delayUs(1000);
-                //********************************
-                returnedKey = scanKeypad(2);
-                if (returnedKey != '!'){
-                delayUs(1000);
-                    printCharLCD(returnedKey);
-                    delayUs(1000);
-                    c = c + 1;
-                    if (c != 16) moveCursorLCD(1,0);
-                    else if (c == 16 && r == 0) {
-                        c = 0;
-                        r = 2;
-                        moveCursorLCD(0,r);
-                    }
-                    else if (c == 16 && r == 2) {
-                        c = 0;
-                        r = 0;
-                        moveCursorLCD(0,r);
-                    }
-                    state = WAIT4RELEASE;
-                }
-                //********************************
-                state = WAIT4RELEASE;
-                break;
+			case IDLE_F:
+				break;
+
+			case D_IDLE_F:
+				break;
+
+			case BACKWARD:
+				break;
+
+			case D_BACKWORD:
+				break;
         }
         
     }
@@ -161,52 +83,11 @@ int main(void)
 
 //interrupt to go to init state ( reset the system )
 void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterupt(){
-    INTERRUPT_E_FLAG = DOWN;
-    int i = 0;
-    
-    if (state == WAIT4PRESS && (KEYPAD_PORT_ROW0 == PRESSED || KEYPAD_PORT_ROW1 == PRESSED || KEYPAD_PORT_ROW2 == PRESSED || KEYPAD_PORT_ROW3 == PRESSED)) {
-        INTERRUPT_E_PINS = _OFF;
-        state = WAIT;
-    }
-    if (state == WAIT4RELEASE && KEYPAD_PORT_ROW0 == RELEASED && KEYPAD_PORT_ROW1 == RELEASED && KEYPAD_PORT_ROW2 == RELEASED && KEYPAD_PORT_ROW3 == RELEASED ){
-        //INTERRUPT_E_PINS = _ON;
-        state = WAIT4PRESS;
-    }
-    
-//    if (KEYPAD_PORT_ROW0 == PRESSED){
-//        printStringLCD("ROW0");
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//        returnedKey = scanKeypad();
-//        printCharLCD(returnedKey);
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//        
-//    }
-//    
-//    if (KEYPAD_PORT_ROW1 == PRESSED){
-//        printStringLCD("ROW1");
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//    }
-//    
-//    if (KEYPAD_PORT_ROW2 == PRESSED){
-//        printStringLCD("ROW2");
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//    }
-//    
-//    if (KEYPAD_PORT_ROW3 == PRESSED){
-//        printStringLCD("ROW3");
-//        for(i=0;i<1000;i++) delayUs(1000);
-//        clearLCD();
-//        delayUs(1000);
-//    }
-    
-    
+    //need the switch interupt
+	//INTERRUPT_E_FLAG = DOWN;
 
+	if (state == IDLE_B) { state == D_IDLE_B; }
+	else if (state == FORWARD) { state == D_FORWARD; }
+	else if (state == IDLE_F) { state == D_IDLE_F; }
+	else if (state == BACKWORD) { state == D_BACKWORD; }
 }
