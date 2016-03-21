@@ -20,11 +20,6 @@ void initADC() {
     IFS0bits.AD1IF = 0; // Put down ADC flag
     IPC5bits.AD1IP = 7;
     IEC0bits.AD1IE = 1;
+    ADC18
     AD1CON1bits.ADON = 1; // turn on the ADC
-    
-    
-    
-    
-    
-    
 }

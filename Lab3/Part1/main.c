@@ -34,62 +34,38 @@ volatile char returnedKey = -1;
 // ******************************************************************************************* //
 
 int main(void)
-{
-    int i = 0;
-    int c = 0;
-    int r = 0;
-    
+{   
     enableInterrupts();                   //This function is necessary to use interrupts.
-    initTimer1();
     initLCD();
     initPWM();
     initADC();
+   
+    unsigned long int speed = 0;
+    unsigned long int direction = 0;
+    double voltPOT = 0;
     
     SYSTEMConfigPerformance(10000000);
     
     while(1){
+        // get voltage across the POT
+        voltPOT = ;
         
-        switch(state){
-            case INIT_IDLE:
-                break;
-                
-            case DE_IDLE:
-                state = FORWARD;
-                break;
-                
-            case FORWARD:
-                break;
-                
-            case DE_FORWARD:
-                state = IDLE_2;
-                break;
-                    
-            case IDLE_2:
-                break;
-                
-            case DE_IDLE_2:
-                state = BACKWARD;
-                break;
-                
-            case BACKWARD:
-                break;
-                
-            case DE_BACKWARD:
-                state = INIT_IDLE;
-                break;
-        }
+        // read data from interrupt
+        // print data to lcd
+        printStringLCD(voltPOT);
+        
+        // move motor
+        setMotorSpeed(speed);
+        setMotorDirection(direction);
     }
     return 0;
 }
 
-
 //interrupt to go to init state ( reset the system )
-void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterupt(){
-    //need swicth interrupt flag down
-	//INTERRUPT_E_FLAG = DOWN;
+void __ISR(27_ADC_VECTOR, ip17) _CNInterupt(){
+    //INTERRUPT_FLAG = DOWN;
+    IFS0bits.AD1IF = 0;
     
-	if (state == INIT_IDLE) state = DE_IDLE;
-	else if (state == FORWARD) state = DE_FORWARD;
-	else if (state == IDLE_2) state = DE_IDLE_2;
-	else if (state == BACKWARD) state = DE_BACKWARD;
+    speed = ADC1BUF0;
+    direction = ADC1BUF8;  
 }
