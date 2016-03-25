@@ -19,53 +19,88 @@
 
 //TODO: Define states of the state machine
 typedef enum stateTypeEnum{
-    INIT_IDLE, DE_IDLE, FORWARD, DE_FORWARD, IDLE_2, DE_IDLE_2, BACKWARD, DE_BACKWARD
+    INIT_IDLE, DE_IDLE, FORWARD, DE_FORWARD, IDLE_2, DE_IDLE_2, BACKWARD, DE_BACKWARD, VOLTAGE_LCD
 } stateType;
 
-volatile stateType state=INIT_IDLE;
+
+volatile stateType state = INIT_IDLE;
+volatile int speed = 0;
 //volatile char key=-1;
-volatile int j=0;
+volatile int i=0;
 volatile int check=0;
+volatile int val = 0;
 volatile int col=3;
 volatile char returnedKey = -1;
+volatile int ready = 0;
 
-// 3/2/16- so far column 1 works I think there is a code problem that doesn't let the other two columns go low when button pressed
-//switch interrupts from triggering on row changes to triggering on column changes since that is what we are scanning
 // ******************************************************************************************* //
 
 int main(void)
 {   
-    enableInterrupts();                   //This function is necessary to use interrupts.
+    
+    SYSTEMConfigPerformance(40000000);
+    
     initLCD();
     initPWM();
+    initTimer2();
+    initTimer3();
     initADC();
+    enableInterrupts();                   //This function is necessary to use interrupts.
    
     unsigned long int speed = 0;
     unsigned long int direction = 0;
-    double voltPOT = 0;
+    volatile float printbuffer = 0; //maybe change to float
+   // double voltPOT = 0;
     
-    SYSTEMConfigPerformance(10000000);
+    char str[16];
     
     while(1){
-        // get voltage across the POT
-        voltPOT = ;
         
-        // read data from interrupt
-        // print data to lcd
-        printStringLCD(voltPOT);
+        switch(state){
+            
+            case INIT_IDLE:
+                OC2RS = 0;
+                OC4RS = 0;
+                break;
+            
+            
+            case FORWARD:
+                OC2RS = ADC1BUF0;
+                OC4RS = 0;
+                break;
+                
+            case BACKWARD:
+                OC2RS = 0;
+                OC4RS = 1023 - ADC1BUF0;
+                break;
+        }
         
-        // move motor
-        setMotorSpeed(speed);
-        setMotorDirection(direction);
     }
+    
     return 0;
 }
 
-//interrupt to go to init state ( reset the system )
-void __ISR(27_ADC_VECTOR, ip17) _CNInterupt(){
-    //INTERRUPT_FLAG = DOWN;
-    IFS0bits.AD1IF = 0;
+//interrupt to go to init state ( reset the system ) but I dont think we will need this for part 1
+void __ISR(_ADC_VECTOR, IPL7SRS) _ADCInterrupt(){
     
-    speed = ADC1BUF0;
-    direction = ADC1BUF8;  
+   IFS0bits.AD1IF = 0; //flag down
+   
+   if(ADC1BUF0 > 512){
+       state = FORWARD;
+       OC2RS = ADC1BUF0;
+       OC4RS = 0;
+   }
+   else if(ADC1BUF0 == 512){
+       state = INIT_IDLE;
+       OC2RS = 0;
+       OC4RS = 0;
+   }
+   
+   else {
+       state = BACKWARD;
+       OC2RS = 0;
+       OC4RS = 1032 - ADC1BUF0;
+   }
+   
 }
+ 
