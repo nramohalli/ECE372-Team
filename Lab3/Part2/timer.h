@@ -9,8 +9,8 @@
 #define	TIMER_H
 
 void delayUs(unsigned int delay);
-void initTimer1();
 void initTimer2();
+void initTimer3();
 
 
 #endif	/* TIMER_H */

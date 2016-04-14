@@ -12,7 +12,18 @@
 extern "C" {
 #endif
 
+
 void initPWM();
+void printVoltage(int adcVal);
+void setLeftWheelSpeed(int val);
+void setRightWheelSpeed(int val);
+void setLeftForward(int true);
+void setRightForward(int true);
+
+
+
+
+
 
 
 #ifdef	__cplusplus

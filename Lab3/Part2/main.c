@@ -13,83 +13,127 @@
 #include "timer.h"
 #include "config.h"
 #include "interrupt.h"
-#include "keypad.h"
+#include "string.h"
 #include "ADC.h"
 #include "PWM.h"
+#include "keypad.h"
+
+#define SW_PORT PORTDbits.RD6
+#define SW_TRIS TRISDbits.TRISD6
 
 //TODO: Define states of the state machine
 typedef enum stateTypeEnum{
-    INIT_IDLE, DE_IDLE, FORWARD, DE_FORWARD, IDLE_2, DE_IDLE_2, BACKWARD, DE_BACKWARD
+    IDLE_1, D_IDLE_1, IDLE_2, D_IDLE_2, BACKWARD, D_BACKWARD, FORWARD, D_FORWARD,
 } stateType;
 
-volatile stateType state=INIT_IDLE;
-//volatile char key=-1;
-volatile int j=0;
-volatile int check=0;
-volatile int col=3;
-volatile char returnedKey = -1;
-
-// 3/2/16- so far column 1 works I think there is a code problem that doesn't let the other two columns go low when button pressed
-//switch interrupts from triggering on row changes to triggering on column changes since that is what we are scanning
+volatile int potVoltage = 0;
+volatile stateType state;
+volatile float voltage;
 // ******************************************************************************************* //
 
-int main(void)
-{
-    int i = 0;
-    int c = 0;
-    int r = 0;
-    
-    enableInterrupts();                   //This function is necessary to use interrupts.
-    initTimer1();
-    initLCD();
-    initPWM();
-    initADC();
-    
+int main(void) {
     SYSTEMConfigPerformance(10000000);
+    enableInterrupts(); //This function is necessary to use interrupts.
+    
+    initTimer2();
+    initTimer3();
+    switch1();
+    initPWM();
+    
+    initADC();
+    initLCD();
+    
+    state = IDLE_1;
+    
+    volatile float printbuffer = 0; //maybe change to float
+   // double voltPOT = 0;
+    char str[16];
     
     while(1){
-        
-        switch(state){
-            case INIT_IDLE:
+//           clearLCD();
+//           snprintf(str, sizeof(str), "%0.2f", (float)potVoltage/1023.0*5.0);
+//           printStringLCD(str);
+//           moveCursorLCD(0,0);
+       switch(state){
+           voltage = potVoltage*1.0;
+            case IDLE_1:
+                setLeftForward(1);
+                setRightForward(1);
+                setLeftWheelSpeed(0);
+                setRightWheelSpeed(0);
                 break;
-                
-            case DE_IDLE:
+           case D_IDLE_1:
+                delayUs(100);
                 state = FORWARD;
                 break;
-                
             case FORWARD:
+                CalculatedSpeed();
+                AD1CON1bits.SAMP = 1;
                 break;
-                
-            case DE_FORWARD:
+            case D_FORWARD:
+                delayUs(100);
                 state = IDLE_2;
                 break;
-                    
             case IDLE_2:
+                setLeftWheelSpeed(0);
+                setRightWheelSpeed(0);
                 break;
-                
-            case DE_IDLE_2:
+            case D_IDLE_2:
+                delayUs(100);
                 state = BACKWARD;
                 break;
-                
             case BACKWARD:
-                break;
-                
-            case DE_BACKWARD:
-                state = INIT_IDLE;
+                setLeftForward(0);
+                setRightForward(0);
+                CalculatedSpeed();
+                AD1CON1bits.SAMP = 1;
+                break; 
+            case D_BACKWARD:
+                delayUs(100);
+                state = IDLE_1;
                 break;
         }
     }
     return 0;
 }
 
+void __ISR(_ADC_VECTOR, IPL7SRS) _ADCInterrupt(){
+   IFS0bits.AD1IF = 0; //flag down
+   AD1CON1bits.SAMP = 0;
+   potVoltage = ADC1BUF0;
+}
+ 
+ 
+void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterrupt(){
+    IFS1bits.CNDIF = 0;
 
-//interrupt to go to init state ( reset the system )
-void __ISR(_CHANGE_NOTICE_VECTOR, IPL7SRS) _CNInterupt(){
-    //need swicth interrupt flag down
-	//INTERRUPT_E_FLAG = DOWN;
-    
-	if (state == INIT_IDLE) state = DE_IDLE;
-	else if (state == FORWARD) state = DE_FORWARD;
-	else if (state == IDLE_2) state = DE_IDLE_2;
-	else if (state == BACKWARD) state = DE_BACKWARD;
+    if(SW_PORT == RELEASED){
+       if(state == IDLE_1) {
+           state = D_IDLE_1;
+       }
+       else if(state == FORWARD) {
+           state = D_FORWARD;
+       }
+       else if(state == IDLE_2) {
+           state = D_IDLE_2;
+       }
+       else if(state == BACKWARD) {
+           state = D_BACKWARD;
+       }
+    }
+}
+
+void CalculatedSpeed() {
+    if(potVoltage > 512){
+       setLeftWheelSpeed(1023);
+       setRightWheelSpeed(2048 - potVoltage * 2);
+   }
+   else if (potVoltage == 512){
+       setLeftWheelSpeed(1023);
+       setRightWheelSpeed(1023);
+   }
+   else{
+       setLeftWheelSpeed(potVoltage * 2);
+       setRightWheelSpeed(1023);
+   }
 }
