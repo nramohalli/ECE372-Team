@@ -32,23 +32,45 @@ void initADC() {
 }
 
 void scanLeftIRVoltage() {
+    char str[16];
+    clearLCD();
+    snprintf(str, sizeof(str), "Searching");
+    printStringLCD(str);
+    moveCursorLCD(0,0);
+    
     AD1CHSbits.CH0SA = 0; // Scan AN0
     AD1CON1bits.SAMP = 1;
-    char str[16];
-    while(AD1CON1bits.DONE == 0) {
-        clearLCD();
-        snprintf(str, sizeof(str), "Waiting for Left");
-        printStringLCD(str);
-        moveCursorLCD(0,0);
-    }
+    while(AD1CON1bits.DONE == 0);
 }
 void scanRightIRVoltage() {
+    char str[16];
+    clearLCD();
+    snprintf(str, sizeof(str), "Searching");
+    printStringLCD(str);
+    moveCursorLCD(0,0);
+    
     AD1CHSbits.CH0SA = 3; // Scan AN3
+    AD1CON1bits.SAMP = 1;
+    while(AD1CON1bits.DONE == 0);
+}
+void scanMiddleIRVoltage() {
+    char str[16];
+    clearLCD();
+    snprintf(str, sizeof(str), "Forward");
+    printStringLCD(str);
+    moveCursorLCD(0,0);
+        
+    AD1CHSbits.CH0SA = 5; // Scan AN5
+    AD1CON1bits.SAMP = 1;
+    while(AD1CON1bits.DONE == 0);
+}
+void scanBackIRVoltage() {
+    AD1CHSbits.CH0SA = 4; // Scan AN4
     AD1CON1bits.SAMP = 1;
     char str[16];
     while(AD1CON1bits.DONE == 0) {
         clearLCD();
-        snprintf(str, sizeof(str), "Waiting for Right");
+        snprintf(str, sizeof(str), "Wait for Back");
         printStringLCD(str);
         moveCursorLCD(0,0);
     }

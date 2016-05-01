@@ -13,8 +13,10 @@ extern "C" {
 #endif
 
 void initADC();
+void scanMiddleIRVoltage();
 void scanLeftIRVoltage();
 void scanRightIRVoltage();
+void scanBackIRVoltage();
 
 #ifdef	__cplusplus
 }
